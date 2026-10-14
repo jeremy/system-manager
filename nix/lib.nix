@@ -227,7 +227,11 @@ let
         action,
       }:
       ''
-        ${node}.succeed("RUST_LOG=debug ${profile}/bin/${action} 2>&1 | tee /tmp/output.log")
+        # SCRATCH DIAGNOSTICS: never upstream.
+        _diag_rc, _diag_out = ${node}.execute("RUST_LOG=debug ${profile}/bin/${action} 2>&1 | tee /tmp/output.log")
+        print("--- DIAG ${action} exit code:", _diag_rc)
+        print(${node}.execute("systemctl --failed --no-pager; for u in userborn.service sops-install-secrets.service suid-sgid-wrappers.service sysinit-reactivation.target; do echo \"--- DIAG $u\"; systemctl show -p ActiveState,Result,NRestarts,StartLimitBurst,StartLimitIntervalUSec $u --no-pager; journalctl -b --no-pager -o short-monotonic -u $u | tail -30; done")[1])
+        assert _diag_rc == 0, f"${action} exited {_diag_rc}"
         ${node}.succeed("! grep -F 'ERROR' /tmp/output.log")
       '';
 
