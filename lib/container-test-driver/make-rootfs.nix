@@ -121,6 +121,17 @@ in
         mkdir -p $out/run/systemd
         echo 'systemd-nspawn' > $out/run/systemd/container
 
+        # The container runs inside the Nix build sandbox, whose seccomp filter
+        # refuses setuid and setgid bits (and file capabilities) to every
+        # process in it, the container's root included: the security wrappers
+        # can't be made here, and suid-sgid-wrappers.service would fail on
+        # every activation. Skip it instead; the VM tests cover the wrappers.
+        mkdir -p $out/etc/systemd/system/suid-sgid-wrappers.service.d
+        cat > $out/etc/systemd/system/suid-sgid-wrappers.service.d/nix-sandbox.conf <<'EOF'
+        [Unit]
+        ConditionVirtualization=!container
+        EOF
+
         # Include nix-installer binary
         mkdir -p $out/usr/local/bin
         install -m755 ${nixArtifacts.nix-installer} $out/usr/local/bin/nix-installer
