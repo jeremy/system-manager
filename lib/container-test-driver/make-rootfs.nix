@@ -117,6 +117,8 @@ in
           fi
         done
 
+        # SCRATCH: a no-op change, to rebuild the rootfs
+        true
         # Container marker for systemd
         mkdir -p $out/run/systemd
         echo 'systemd-nspawn' > $out/run/systemd/container
