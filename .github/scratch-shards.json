@@ -2,8 +2,5 @@
   { "name": "container-debian-13", "pattern": "^container-debian-13-" },
   { "name": "container-ubuntu-22_04", "pattern": "^container-ubuntu-22_04-" },
   { "name": "container-ubuntu-24_04", "pattern": "^container-ubuntu-24_04-" },
-  { "name": "container-ubuntu-26_04", "pattern": "^container-ubuntu-26_04-" },
-  { "name": "vm-debian-13-ubuntu-22_04", "pattern": "^vm-(debian-13|ubuntu-22_04)-" },
-  { "name": "vm-ubuntu-24_04-26_04", "pattern": "^vm-ubuntu-(24_04|26_04)-" },
-  { "name": "other", "pattern": ".", "exclude": "^(container|vm)-" }
+  { "name": "container-ubuntu-26_04", "pattern": "^container-ubuntu-26_04-" }
 ]
