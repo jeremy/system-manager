@@ -1,0 +1,5 @@
+[
+  { "name": "containers-empty", "pattern": "^container-(ubuntu-24_04|debian-13)-empty-config$" },
+  { "name": "vm-example", "pattern": "^vm-ubuntu-24_04-(example|security-wrappers)$" },
+  { "name": "vm-prepopulate", "pattern": "^vm-ubuntu-24_04-prepopulate$" }
+]
