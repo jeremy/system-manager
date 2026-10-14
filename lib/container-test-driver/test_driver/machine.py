@@ -506,6 +506,22 @@ class Machine(testinfra.host.Host):
             for line in res.stdout.strip().split("\n"):
                 print(f"  {line}")
 
+        # SCRATCH DIAGNOSTICS: never upstream.
+        diag = self.execute(
+            "echo '--- DIAG exit code: " + str(res.returncode) + "'; "
+            "systemctl --failed --no-pager || true; "
+            "for u in suid-sgid-wrappers.service userborn.service run-wrappers.mount sops-install-secrets.service; do "
+            "echo \"--- DIAG $u\"; systemctl show -p ActiveState,Result,NRestarts $u --no-pager || true; "
+            "journalctl -b --no-pager -o short-monotonic -u $u | tail -40 || true; done; "
+            "echo '--- DIAG seccomp'; grep -E 'Seccomp|NoNewPrivs|CapEff' /proc/self/status || true; "
+            "cp /bin/true /tmp/diag-suid && chmod u+s /tmp/diag-suid && echo 'DIAG chmod u+s: ok' || echo 'DIAG chmod u+s: FAILED'; "
+            "ls -l /tmp/diag-suid || true; "
+            "echo '--- DIAG findmnt'; findmnt /run/wrappers || true; ls -la /run/wrappers || true",
+            timeout=60,
+        )
+        for line in diag.stdout.strip().split("\n"):
+            print(f"  DIAG| {line}")
+
         if res.returncode != 0:
             msg = f"Activation failed with exit code {res.returncode}"
             raise Error(msg)
